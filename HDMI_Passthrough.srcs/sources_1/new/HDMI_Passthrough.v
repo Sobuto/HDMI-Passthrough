@@ -24,6 +24,14 @@ module HDMI_Passthrough(
     input wire sysclk
     );
     
+    //FIFO Size
+    integer i_fifo_depth = 64;
+    integer i_fifo_width = 16;
+    
+    
+    
+    
+    
     always@(posedge sysclk)
     begin
         //Do A Thing
