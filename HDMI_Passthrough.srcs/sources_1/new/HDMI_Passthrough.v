@@ -21,6 +21,13 @@
 
 
 module HDMI_Passthrough(
-
+    input wire sysclk
     );
+    
+    always@(posedge sysclk)
+    begin
+        //Do A Thing
+    end
+    
+    
 endmodule
