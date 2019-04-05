@@ -21,12 +21,27 @@
 
 
 module HDMI_Passthrough(
-    input wire sysclk
+    input   wire    sysclk,
+    output  wire    o_rd_empty,
+    input   wire    i_rd_en,
+    output  wire    o_rd_data[3:0], 
+    output  wire    o_wr_full,
+    input   wire    i_wr_en,
+    input   wire    i_wr_data[3:0],
+   	input 	wire	rst
     );
     
     //FIFO Size
     integer i_fifo_depth = 64;
     integer i_fifo_width = 16;
+    
+    //FIFO Output Registers
+	reg r_rd_data[3:0];
+	reg r_rd_empty;
+	reg r_wr_full;
+    
+    
+    
     
     
     
@@ -37,5 +52,10 @@ module HDMI_Passthrough(
         //Do A Thing
     end
     
-    
+	//Assign the outputs
+    assign o_rd_data[3:0] <= r_rd_data[3:0];
+	assign o_rd_empty <= r_rd_empty;
+	assign o_wr_full <= r_wr_full;
+
+
 endmodule
