@@ -30,9 +30,10 @@ module UART(
     );
     
     
-    parameter baud_rate = 9600;
-    parameter data_bits = 10;
-    parameter stop_bit = 1;
+    parameter BAUD_RATE = 9600;
+    parameter DATA_BITS = 10;
+    parameter START_BIT = 0;
+    parameter STOP_BIT = 0;
     
     reg [3:0] bit_count;
     reg [13:0] baud_count;        //14 bits to allow 9600 to 115200
@@ -65,35 +66,37 @@ module UART(
     begin 
         if (i_rst) begin
             o_tx_active = 1'b0;
+            o_tx_data = !START_BIT;
             bit_count = 4'h0;   
-            tx_shift = 8'h00;         
+            tx_shift = 8'h00;     
         end
         else if((i_tx_write || bit_count > 0) && transmit_en) begin //Change states at baud status 
             if (bit_count == 0) begin //Transmit Start Bit, Transmit is busy
                 o_tx_active = 1'b1;
-                o_tx_data = 1'b1;
+                o_tx_data = !START_BIT;
                 tx_shift = i_tx_byte;
                 bit_count = bit_count + 1;
             end
-            else if (bit_count < data_bits) begin //Transmit Data Send, 8 bits + (start & stop)
+            else if (bit_count < DATA_BITS) begin //Transmit Data Send, 8 bits + (start & stop)
                 o_tx_active = 1'b1;
                 o_tx_data = tx_shift[0];
                 tx_shift = tx_shift >> 1;
                 bit_count = bit_count + 1;
             end
-            else if (bit_count == data_bits) begin  //Transmit Stop Bit
+            else if (bit_count == DATA_BITS) begin  //Transmit Stop Bit
                 o_tx_active = 1'b1;
-                o_tx_data = 1'b1;
+                o_tx_data = STOP_BIT;
                 bit_count = 1'b0;
             end
             else begin //Transmit is now ready
                 o_tx_active = 1'b0;
-                o_tx_data = 1'b0;
+                o_tx_data = !START_BIT;
                 bit_count = 1'b0;
             end
          end
          else begin
             o_tx_active = o_tx_active;
+            o_tx_data = o_tx_data;
             bit_count = bit_count;
             tx_shift = tx_shift;
          end
